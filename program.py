@@ -100,3 +100,6 @@ if Compare(PoppedNode.state,GS):
     text = text[:-2]
     print(text)
     exit(0)
+else:
+    print("No solution found")
+    exit(0)
