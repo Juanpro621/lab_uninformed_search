@@ -99,3 +99,4 @@ if Compare(PoppedNode.state,GS):
             text += str(temp.pop()) + "; "
     text = text[:-2]
     print(text)
+    exit(0)
