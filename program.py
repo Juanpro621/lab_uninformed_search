@@ -27,14 +27,15 @@ def Compare(S1,S2):
 
 def states_recursion(actual):
   if(actual.father != None):
-    print(actual.action)
-    print(actual.father.state)
+    #print(actual.action)
+    #print(actual.father.state)
+    temp.append(actual.action)
     states_recursion(actual.father)
 
 q = Q.PriorityQueue()
 
 DefCost = 1
-
+temp = []
 Max = input()
 
 InitialS = input()
@@ -88,10 +89,11 @@ while (not Compare(PoppedNode.state, GS)) and (not q.empty()):
                         AuxNode.father = PoppedNode
                         q.put((NewCost,Tie,AuxNode))
         PoppedNode = q.get()[2]
-
 if Compare(PoppedNode.state,GS):
     print(PoppedNode.cost)
     states_recursion(PoppedNode)
-    print("Nice")
-else:
-    print("No se encontro")
+    text = ""
+    for x in range(0, len(temp)):
+            text += str(temp.pop()) + "; "
+    text = text[:-2]
+    print(text)
