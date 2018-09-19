@@ -60,10 +60,12 @@ PoppedNode = Node((0,0),IniS,0)
 
 for x in range(0, LenStack):
     if(not(len(IniS[x]) <= int(Max))):
-        exit("No solution found")
+        print"No solution found")
+        exit(0)
     if(not(len(GS[x]) <= int(Max))):
-        exit("No solution found")
-
+        print("No solution found")
+        exit(0)
+        
 for x in range(0, LenStack):
     for y in range(0, len(IniS[x])):
         if(IniS[x][y] == ''):
