@@ -1,5 +1,3 @@
-#Juan Pablo Orantes
-
 from copy import deepcopy
 
 try:
