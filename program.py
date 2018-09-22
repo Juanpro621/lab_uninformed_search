@@ -27,15 +27,35 @@ def Compare(S1,S2):
 
 def states_recursion(actual):
   if(actual.father != None):
-    #print(actual.action)
-    #print(actual.father.state)
     temp.append(actual.action)
     states_recursion(actual.father)
+
+def h(State):
+    AuxMat=deepcopy(State)
+    for x in range(0,LenStack):
+        MaxInStack=len(AuxMat[x])
+        for y in range(MaxInStack,int(Max)):
+            AuxMat[x].append(0)
+    AuxGS=deepcopy(GS)
+    for x in range(0,LenStack):
+        MaxInStack=len(AuxGS[x])
+        for y in range(MaxInStack,int(Max)):
+            AuxGS[x].append(0)
+    heuristic=0
+    for x in range(0,LenStack):
+        for y in range(0,int(Max)):
+            if AuxMat[x][y] != AuxGS[x][y]:
+                if AuxMat[x][y] != 0:
+                    if AuxGS[x][0]!='X':
+                        #print("X=" + str(x) + " Y=" + str(y) + " H=" + str(heuristic))
+                        heuristic+=1
+    return heuristic
 
 q = Q.PriorityQueue()
 
 DefCost = 1
 temp = []
+
 Max = input()
 
 InitialS = input()
@@ -51,27 +71,31 @@ for x in range(0, len(GS)):
     GS[x] = GS[x].replace("(","").replace(")","")
     GS[x] = GS[x].split(',')
 
-IniNode = Node((0,0),IniS,0)
+for x in range(0, LenStack):
+    for y in range(0, len(IniS[x])):
+        if(IniS[x][y] == ''):
+            del(IniS[x][len(IniS[x]) - 1])
+    for y in range(0, len(GS[x])):
+        if(GS[x][y] == ''):
+            del(GS[x][len(GS[x]) - 1])
+
+IniNode = Node((0,0),IniS,h(IniS))
 Tie = 0
 q.put((IniNode.cost,Tie,IniNode))
-PoppedNode = Node((0,0),IniS,0)
+PoppedNode = Node((0,0),IniS,h(IniS))
+Visited = []
+Visited.append(IniS)
 
 #We assume that the # of containers is the same in both the initial state and the goal state
 
 for x in range(0, LenStack):
     if(not(len(IniS[x]) <= int(Max))):
         print("No solution found")
-        exit(0)
+        exit()
     if(not(len(GS[x]) <= int(Max))):
         print("No solution found")
-        exit(0)
+        exit()
 
-for x in range(0, LenStack):
-    for y in range(0, len(IniS[x])):
-        if(IniS[x][y] == ''):
-            del(IniS[x][len(IniS[x]) - 1])
-        if(GS[x][y] == ''):
-            del(GS[x][len(GS[x]) - 1])
 
 while (not Compare(PoppedNode.state, GS)) and (not q.empty()):
     if (Tie == 0):
@@ -86,11 +110,19 @@ while (not Compare(PoppedNode.state, GS)) and (not q.empty()):
                         Tie += 1
                         NewState[y].append(Stack[x][len(Stack[x]) - 1])
                         del(NewState[x][len(NewState[x]) - 1])
-                        NewCost=abs(x - y) + DefCost + PoppedNode.cost
-                        AuxNode=Node((x,y),NewState,NewCost)
-                        AuxNode.father = PoppedNode
-                        q.put((NewCost,Tie,AuxNode))
+
+                        AlVisited=False
+                        for Vis in Visited:
+                            if(NewState==Vis):
+                                AlVisited=True
+                        if not AlVisited:
+                            NewCost=abs(x - y) + DefCost + PoppedNode.cost + h(NewState) - h(PoppedNode.state)
+                            AuxNode=Node((x,y),NewState,NewCost)
+                            AuxNode.father = PoppedNode
+                            q.put((NewCost,Tie,AuxNode))
+                            Visited.append(NewState)
         PoppedNode = q.get()[2]
+
 if Compare(PoppedNode.state,GS):
     print(PoppedNode.cost)
     states_recursion(PoppedNode)
@@ -99,7 +131,3 @@ if Compare(PoppedNode.state,GS):
             text += str(temp.pop()) + "; "
     text = text[:-2]
     print(text)
-    exit(0)
-else:
-    print("No solution found")
-    exit(0)
